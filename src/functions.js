@@ -1,5 +1,3 @@
-const print=function (str){
+export function print (str){
   alert(str)
 }
-
-export default print
