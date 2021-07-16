@@ -28,50 +28,12 @@
       <fieldset class="form__block">
         <legend class="form__legend">Цвет</legend>
         <ul class="colors">
-          <li class="colors__item">
+          <li class="colors__item" v-for="item in defaultFilterColors">
             <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="#73B6EA"
-                     checked="">
-              <span class="colors__value" style="background-color: #73B6EA;">
-                  </span>
+              <input class="colors__radio sr-only" type="radio" name="color" :value="item.color"
+                     :key="item.color" v-model="currentColor">
+              <span class="colors__value" :style="filterInputColor(item.color)"></span>
             </label>
-          </li>
-          <li class="colors__item">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="#FFBE15">
-              <span class="colors__value" style="background-color: #FFBE15;">
-                  </span>
-            </label>
-          </li>
-          <li class="colors__item">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="#939393">
-              <span class="colors__value" style="background-color: #939393;">
-                </span></label>
-          </li>
-          <li class="colors__item">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="#8BE000">
-              <span class="colors__value" style="background-color: #8BE000;">
-                </span></label>
-          </li>
-          <li class="colors__item">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="#FF6B00">
-              <span class="colors__value" style="background-color: #FF6B00;">
-                </span></label>
-          </li>
-          <li class="colors__item">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="#FFF">
-              <span class="colors__value" style="background-color: #FFF;">
-                </span></label>
-          </li>
-          <li class="colors__item">
-            <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" value="#000">
-              <span class="colors__value" style="background-color: #000;">
-                </span></label>
           </li>
         </ul>
       </fieldset>
@@ -157,35 +119,54 @@ export default {
       currentPriceFrom: 0,
       currentPriceTo: 0,
       currentCategoryId: 0,
+      currentColor: '',
+      defaultFilterColors: [
+        {color: '#73B6EA', check: false},
+        {color: '#FFBE15', check: true},
+        {color: '#939393', check: false},
+        {color: '#8BE000', check: false},
+        {color: '#FF6B00', check: false},
+        {color: '#FFF', check: false},
+        {color: '#000', check: false}
+      ]
     }
   },
-  props: ['priceFrom', 'priceTo', 'categoryId'],
+  props: ['priceFrom', 'priceTo', 'categoryId', 'filterColor'],
   computed: {
     categories() {
       return categories;
     },
+
   },
   methods: {
     submit() {
-        this.$emit('update:price-from', this.currentPriceFrom);
-        this.$emit('update:price-to', this.currentPriceTo);
-        this.$emit('update:category-id', this.currentCategoryId);
+      this.$emit('update:price-from', this.currentPriceFrom);
+      this.$emit('update:price-to', this.currentPriceTo);
+      this.$emit('update:category-id', this.currentCategoryId);
+      this.$emit('update:filter-color', this.currentColor);
     },
     reset() {
       this.$emit('update:price-from', 0);
       this.$emit('update:price-to', 0);
       this.$emit('update:category-id', 0);
+      this.$emit('update:filter-color', '');
     },
+    filterInputColor(item) {
+      return ("background-color:" + item)
+    }
   },
-  watch:{
-    priceFrom(value){
+  watch: {
+    priceFrom(value) {
       this.currentPriceFrom = value;
     },
-    priceTo(value){
+    priceTo(value) {
       this.currentPriceTo = value;
     },
-    categoryId(value){
+    categoryId(value) {
       this.currentCategoryId = value;
+    },
+    filterColor(value) {
+      this.currentColor = value;
     },
   }
 }

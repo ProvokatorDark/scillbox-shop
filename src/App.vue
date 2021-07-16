@@ -1,68 +1,45 @@
 <template>
-
-  <main class="content container">
-    <div class="content__top content__top--catalog">
-      <h1 class="content__title">
-        Каталог
-      </h1>
-      <span class="content__info">
-        152 товара
-      </span>
-    </div>
-
-    <div class="content__catalog">
-      <ProductFilter :price-from.sync="filterPriceFrom" :price-to.sync="filterPriceTo" :category-id.sync="filterCategoryId"/>
-      <section class="catalog">
-        <ProductList :products="products"/>
-        <BasePagination v-model="page" :count="countProducts" :per-page="productsPerPage"/>
-      </section>
-
-    </div>
-  </main>
-
-
+    <component :is="currentPageComponent" :page-params="currentPageParams"></component>
 </template>
 
 <script>
-import products from './data/products';
-import ProductList from "./components/ProductList";
-import BasePagination from "./components/BasePagination";
-import ProductFilter from "./components/ProductFilter";
+import MainPage from "./pages/MainPage";
+import ProductPage from "./pages/ProductPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import eventBus from "./eventBus";
+
+const routes={
+  main:'MainPage',
+  product:'ProductPage'
+};
+
 export default {
   name: 'App',
-  components:{ProductList,BasePagination,ProductFilter},
-  data() {
-    return {
-      filterPriceFrom:0,
-      filterPriceTo:0,
-      filterCategoryId:0,
-      page:1,
-      productsPerPage:3
-    };
+  data(){
+    return{
+      currentPage:'main',
+      currentPageParams:{}
+    }
+  },
+  methods:{
+    gotoPage(pageName,pageParams){
+      this.currentPage=pageName;
+      this.currentPageParams=pageParams||{};
+    }
   },
   computed:{
-    filteredProducts(){
-      let filteredProducts=products;
-      if (this.filterPriceFrom>0){
-        filteredProducts=filteredProducts.filter(product=>product.price>this.filterPriceFrom);
-      }
-      if (this.filterCategoryId){
-        filteredProducts=filteredProducts.filter(product=>product.categoryId===this.filterCategoryId);
-      }
-      if (this.filterPriceTo>0){
-        filteredProducts=filteredProducts.filter(product=>product.price<this.filterPriceTo);
-      }
-      return filteredProducts
+    currentPageComponent(){
+      return routes[this.currentPage]||'NotFoundPage';
     },
-    products(){
-      const offset =(this.page-1)*this.productsPerPage;
-      return this.filteredProducts.slice(offset,offset+this.productsPerPage);
-    },
-    countProducts(){
-      return this.filteredProducts.length;
-    }
-}
-
+  },
+  components:{
+    MainPage,
+    ProductPage,
+    NotFoundPage
+  },
+  created() {
+    eventBus.$on('gotoPage',(pageName,pageParams)=>this.gotoPage(pageName,pageParams))
+  }
 };
 </script>
 
