@@ -63,6 +63,11 @@ export default {
     },
     countProducts(){
       return this.filteredProducts.length;
+    },
+  },
+  watch:{
+    filteredProducts(){
+      this.page=1
     }
   }
 

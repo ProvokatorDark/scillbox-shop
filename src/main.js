@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
+import router from "./router";
+import store from "./store"
 
 
 
@@ -22,6 +24,8 @@ let timerId = setInterval(() => secret='', 60000);
 
 Vue.config.productionTip = false;
 
-var webstore = new Vue({
+new Vue({
+  router,
+  store,
   render: (h) => h(App),
 }).$mount('#app');
