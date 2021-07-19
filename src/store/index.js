@@ -23,8 +23,6 @@ export default new Vuex.Store({
           amount
         })
       }
-
-
     },
     updateCartProductAmount(state, {productId, amount}) {
       const item = state.cardProducts.find(item => item.productId === productId)
@@ -50,7 +48,11 @@ export default new Vuex.Store({
       return getters.cartDetailProducts.reduce((acc, item) =>
         (item.product.price * item.amount) + acc, 0
       );
-
+    },
+    cartTotalItems(state){
+      return state.cardProducts.map(item => item.amount).reduce(function(sum, current) {
+        return sum + current;
+      }, 0);
     }
   }
 });

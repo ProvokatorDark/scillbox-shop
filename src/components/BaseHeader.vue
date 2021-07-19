@@ -1,7 +1,9 @@
 <template>
   <header class="header">
     <div class="header__wrapper container">
+      <router-link :to="{name:'main'}">
       <span class="header__info">Каталог</span>
+      </router-link>
 
       <router-link class="header__logo" :to="{name:'main'}">
         <img src="img/svg/logo-tech.svg" alt="Логотип интернет магазина Технозавррр" width="190" height="33">

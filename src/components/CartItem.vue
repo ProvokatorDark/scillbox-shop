@@ -1,7 +1,6 @@
 <template>
   <li class="cart__item product">
     <div class="product__pic">
-
       <img :src="item.product.image" width="120" height="120"  :alt="item.product.title">
     </div>
     <h3 class="product__title">
@@ -12,15 +11,15 @@
               </span>
 
     <div class="product__counter form__counter">
-      <button type="button" aria-label="Убрать один товар">
+      <button type="button" aria-label="Убрать один товар" @click="updateLocalCartProductAmount(item.amount-1)">
         <svg width="10" height="10" fill="currentColor">
           <use xlink:href="#icon-minus"></use>
         </svg>
       </button>
 
-      <input type="text" v-model.number="item.amount" name="count">
+      <input type="text" v-model.number="item.amount">
 
-      <button type="button" aria-label="Добавить один товар">
+      <button type="button" aria-label="Добавить один товар" @click="updateLocalCartProductAmount(item.amount+1)">
         <svg width="10" height="10" fill="currentColor">
           <use xlink:href="#icon-plus"></use>
         </svg>
@@ -49,6 +48,11 @@ export default {
   filters:{numberFormat},
   methods:{
     ...mapMutations({deleteProduct:'deleteCartProduct'}),
+    updateLocalCartProductAmount(value){
+      if (value>=1){
+        this.$store.commit('updateCartProductAmount',{productId:this.item.productId,amount:value})
+      }
+    }
   },
   computed:{
     amount:{
