@@ -36,21 +36,25 @@
         <use xlink:href="#icon-close"></use>
       </svg>
     </button>
+
   </li>
 </template>
 
 <script>
 import numberFormat from "@/helpers/numberFormat";
 import { mapMutations } from 'vuex';
+import {mapActions} from 'vuex';
 export default {
   name: "CartItem",
   props:['item'],
   filters:{numberFormat},
   methods:{
-    ...mapMutations({deleteProduct:'deleteCartProduct'}),
+    deleteProduct(id){
+      this.$store.dispatch('deleteCartProduct',id)
+    },
     updateLocalCartProductAmount(value){
       if (value>=1){
-        this.$store.commit('updateCartProductAmount',{productId:this.item.productId,amount:value})
+        this.$store.dispatch('updateCartProductAmount',{productId:this.item.productId,amount:value})
       }
     }
   },
@@ -60,7 +64,7 @@ export default {
         return this.item.amount;
       },
       set(value){
-        this.$store.commit('updateCartProductAmount',{productId:this.item.productId,amount:value})
+        this.$store.dispatch('updateCartProductAmount',{productId:this.item.productId,amount:value})
       }
     }
   }

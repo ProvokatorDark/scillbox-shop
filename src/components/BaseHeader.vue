@@ -12,7 +12,13 @@
       <a class="header__tel" href="tel:8 800 600 90 09">
         8 800 600 90 09
       </a>
-      <CartIndicator/>
+      <div v-if="isCartLoading">
+        <div>
+          <span>Идет загрузка корзины</span>
+        </div>
+      </div>
+      <div v-else> <CartIndicator /></div>
+
     </div>
   </header>
 </template>
@@ -23,10 +29,15 @@ import CartIndicator from "@/components/CartIndicator";
 export default {
   name: "BaseHeader",
   methods:{
-    gotoPage
+    gotoPage,
   },
   components:{
     CartIndicator
+  },
+  computed:{
+    isCartLoading() {
+      return this.$store.state.isCartLoading
+    }
   }
 }
 </script>

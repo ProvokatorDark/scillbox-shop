@@ -15,10 +15,10 @@
           {{ product.price | numberFormat}} ₽
       </span>
       <ul class="colors colors--black">
-        <li class="colors__item" v-for="color in product.color">
+        <li class="colors__item" v-for="color in product.colors">
           <label class="colors__label">
-            <input class="colors__radio sr-only" type="radio" value="#73B6EA" >
-            <span class="colors__value" :style="filterInputColor(color)" >
+            <input class="colors__radio sr-only" type="radio" >
+            <span class="colors__value" :style="filterInputColor(color.code)" >
                   </span>
           </label>
         </li>
@@ -53,5 +53,7 @@ export default {
 </script>
 
 <style scoped>
-
+.colors__value{
+  border: 1px darkgray solid;
+}
 </style>

@@ -18,11 +18,20 @@
         Корзина
       </h1>
       <span class="content__info">
-        {{$store.getters.cartTotalItems}} {{howManyItems}}
+        {{ $store.getters.cartTotalItems }} {{ howManyItems }}
       </span>
     </div>
+    <div v-if="isCartLoading">
+      <div class="preloader">
+        <svg class="preloader__image" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <path fill="currentColor"
+                d="M304 48c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-48 368c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zm208-208c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zM96 256c0-26.51-21.49-48-48-48S0 229.49 0 256s21.49 48 48 48 48-21.49 48-48zm12.922 99.078c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.491-48-48-48zm294.156 0c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.49-48-48-48zM108.922 60.922c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.491-48-48-48z">
+          </path>
+        </svg>
+      </div>
+    </div>
 
-    <section class="cart">
+    <section v-else class="cart">
       <form class="cart__form form" action="#" method="POST">
         <div class="cart__field">
           <ul class="cart__list">
@@ -35,7 +44,7 @@
             Мы&nbsp;посчитаем стоимость доставки на&nbsp;следующем этапе
           </p>
           <p class="cart__price">
-            Итого: <span>{{totalPrice|numberFormat}} ₽</span>
+            Итого: <span>{{ totalPrice|numberFormat }} ₽</span>
           </p>
 
           <button class="cart__button button button--primery" type="submit">
@@ -51,28 +60,37 @@
 import numberFormat from "@/helpers/numberFormat";
 import {mapGetters} from 'vuex';
 import CartItem from "@/components/CartItem";
+
 export default {
   name: "CardPage",
-  filters:{
+  data() {
+    return {}
+  },
+  filters: {
     numberFormat,
   },
-  components:{CartItem},
-  computed:{
-    ...mapGetters({products:'cartDetailProducts',totalPrice:'cartTotalPrice'}),
-    howManyItems(){
-      let arrLength=this.$store.getters.cartTotalItems
+  components: {CartItem},
+  computed: {
+    ...mapGetters({totalPrice: 'cartTotalPrice'}),
+    products() {
+      return this.$store.getters.cartDetailProducts
+    },
+    howManyItems() {
+      let arrLength = this.$store.getters.cartTotalItems
       let strLenght = arrLength.toString();
-      strLenght=strLenght.split('')
+      strLenght = strLenght.split('')
       let last = strLenght[strLenght.length - 1];
-      last=Number(last);
-      let output='';
-      (arrLength>=11&&arrLength<=20)?output='товаров':(last===1)?output='товар':( last > 1 && last<=4)?output='товарa':output='товаров';
+      last = Number(last);
+      let output = '';
+      (arrLength >= 11 && arrLength <= 20) ? output = 'товаров' : (last === 1) ? output = 'товар' : (last > 1 && last <= 4) ? output = 'товарa' : output = 'товаров';
       return output
+    },
+    isCartLoading() {
+      return this.$store.state.isCartLoading
     }
   },
-  methods:{
-
-  }
+  methods: {},
+  watch: {}
 }
 </script>
 

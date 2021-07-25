@@ -30,9 +30,9 @@
         <ul class="colors">
           <li class="colors__item" v-for="item in defaultFilterColors">
             <label class="colors__label">
-              <input class="colors__radio sr-only" type="radio" name="color" :value="item.color"
-                     :key="item.color" v-model="currentColor">
-              <span class="colors__value" :style="filterInputColor(item.color)"></span>
+              <input class="colors__radio sr-only" type="radio" name="color" :value="item.code"
+                     :key="item.id" v-model="currentColor">
+              <span class="colors__value" :style="filterInputColor(item.code)"></span>
             </label>
           </li>
         </ul>
@@ -110,7 +110,10 @@
 </template>
 
 <script>
-import categories from "../data/categories";
+
+import axios from "axios";
+import {API_BASE_URL} from "../../config";
+import filterInputColor from "@/helpers/filterInputColor";
 
 export default {
   name: "ProductFilter",
@@ -120,39 +123,41 @@ export default {
       currentPriceTo: 0,
       currentCategoryId: 0,
       currentColor: '',
-      defaultFilterColors: [
-        {color: '#73B6EA', check: false},
-        {color: '#FFBE15', check: true},
-        {color: '#939393', check: false},
-        {color: '#8BE000', check: false},
-        {color: '#FF6B00', check: false},
-        {color: '#FFF', check: false},
-        {color: '#000', check: false}
-      ]
+      defaultFilterColors: null,
+      categoriesData: null
     }
   },
   props: ['priceFrom', 'priceTo', 'categoryId', 'filterColor'],
   computed: {
     categories() {
-      return categories;
+      return this.categoriesData ? this.categoriesData.items : [];
     },
 
   },
   methods: {
+    filterInputColor,
     submit() {
       this.$emit('update:price-from', this.currentPriceFrom);
       this.$emit('update:price-to', this.currentPriceTo);
       this.$emit('update:category-id', this.currentCategoryId);
-      this.$emit('update:filter-color', this.currentColor);
+      if (this.currentColor){
+        this.$emit('update:filter-color', this.defaultFilterColors.find(item=>item.code===this.currentColor).id);
+      }
+
     },
     reset() {
       this.$emit('update:price-from', 0);
       this.$emit('update:price-to', 0);
       this.$emit('update:category-id', 0);
-      this.$emit('update:filter-color', '');
+      this.$emit('update:filter-color', null);
     },
-    filterInputColor(item) {
-      return ("background-color:" + item)
+    loadCategories() {
+      axios.get(API_BASE_URL + '/api/productCategories')
+        .then(response => this.categoriesData = response.data)
+    },
+    loadColors() {
+      axios.get(API_BASE_URL + '/api/colors')
+        .then(response => this.defaultFilterColors = response.data.items)
     }
   },
   watch: {
@@ -168,6 +173,10 @@ export default {
     filterColor(value) {
       this.currentColor = value;
     },
+  },
+  created() {
+    this.loadCategories();
+    this.loadColors();
   }
 }
 </script>
