@@ -13,7 +13,7 @@
       <ProductFilter :filter-color.sync="filterColor" :price-from.sync="filterPriceFrom" :price-to.sync="filterPriceTo"
                      :category-id.sync="filterCategoryId"/>
       <section class="catalog">
-        <div v-if="productsLoading">
+        <div v-if="productsLoading" class="wrapper">
           <div class="preloader">
             <svg class="preloader__image" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
               <path fill="currentColor"
@@ -25,7 +25,7 @@
         <div v-if="productsLoadingFailed">Произошла ошибка при загрузке товаров...
           <button @click.prevent="loadProducts">Попробовать еще раз</button>
         </div>
-        <ProductList :products="products"/>
+        <ProductList :products="products" v-else v-show="!productsLoading"/>
         <BasePagination v-model="page" :count="countProducts" :per-page="productsPerPage"/>
       </section>
 
@@ -121,26 +121,12 @@ export default {
 
 <style>
 .preloader {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  /* фоновый цвет */
-  background: #e0e0e0;
   z-index: 1001;
+  width: 70px;
+  height: 70px;
 }
 
 .preloader__image {
-  position: relative;
-  top: 50%;
-  left: 50%;
-  width: 70px;
-  height: 70px;
-  margin-top: -35px;
-  margin-left: -35px;
-  text-align: center;
   animation: preloader-rotate 2s infinite linear;
 }
 
@@ -148,5 +134,11 @@ export default {
   100% {
     transform: rotate(360deg);
   }
+}
+.wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 </style>
