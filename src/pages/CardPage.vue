@@ -47,9 +47,9 @@
             Итого: <span>{{ totalPrice|numberFormat }} ₽</span>
           </p>
 
-          <button class="cart__button button button--primery" type="submit">
+          <router-link tag="button" :to="{name:'order'}" class="cart__button button button--primery" type="submit">
             Оформить заказ
-          </button>
+          </router-link>
         </div>
       </form>
     </section>
@@ -60,7 +60,7 @@
 import numberFormat from "@/helpers/numberFormat";
 import {mapGetters} from 'vuex';
 import CartItem from "@/components/CartItem";
-
+import howManyItems from "@/helpers/howManyItems";
 export default {
   name: "CardPage",
   data() {
@@ -72,18 +72,9 @@ export default {
   components: {CartItem},
   computed: {
     ...mapGetters({totalPrice: 'cartTotalPrice'}),
+    howManyItems,
     products() {
       return this.$store.getters.cartDetailProducts
-    },
-    howManyItems() {
-      let arrLength = this.$store.getters.cartTotalItems
-      let strLenght = arrLength.toString();
-      strLenght = strLenght.split('')
-      let last = strLenght[strLenght.length - 1];
-      last = Number(last);
-      let output = '';
-      (arrLength >= 11 && arrLength <= 20) ? output = 'товаров' : (last === 1) ? output = 'товар' : (last > 1 && last <= 4) ? output = 'товарa' : output = 'товаров';
-      return output
     },
     isCartLoading() {
       return this.$store.state.isCartLoading

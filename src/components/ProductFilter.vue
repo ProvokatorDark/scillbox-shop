@@ -155,9 +155,8 @@ export default {
     loadColors() {
       axios.get(API_BASE_URL + '/api/colors')
         .then(response =>
-          this.defaultFilterColors = response.data.items.filter(objColor=>!objColor.title.includes('script'))
+          this.defaultFilterColors = response.data.items.filter(objColor=>!objColor.title.includes('<script'))
         )
-
     }
   },
   watch: {
