@@ -28,7 +28,7 @@
     </div>
 
     <section class="cart">
-      <form class="cart__form form" action="#" method="POST" @submit.prevent="order">
+      <form class="cart__form form" action="#" method="POST" @submit.prevent="validateForm">
         <div class="cart__field">
           <div v-if="sendingBasket">
             <div class="preloader">
@@ -40,19 +40,19 @@
             </div>
           </div>
           <div v-else class="cart__data">
-            <BaseFormText v-model="formData.name" title="ФИО" :error="formError.name"
+            <BaseFormText v-model="formData.name" title="ФИО" :error="formError.name" :front="front.name"
                           placeholder="Введите ваше полное имя"/>
-            <BaseFormText v-model="formData.address" title="Адрес доставки" :error="formError.address"
+            <BaseFormText v-model="formData.address" title="Адрес доставки" :error="formError.address" :front="front.address"
                           placeholder="Введите ваш адрес"/>
-            <BaseFormText v-model="formData.phone" title="Телефон" :error="formError.phone"
+            <BaseFormText v-model="formData.phone" title="Телефон" :error="formError.phone" :front="front.phone"
                           placeholder="Введите ваш телефон"/>
-            <BaseFormText v-model="formData.email" title="Email" :error="formError.email"
+            <BaseFormText v-model="formData.email" title="Email" :error="formError.email" :front="front.email"
                           placeholder="Введи ваш Email"/>
-            <BaseFormTextArea v-model="formData.comment" title="Комментарий к заказу" :error="formError.comment"
+            <BaseFormTextArea v-model="formData.comment" title="Комментарий к заказу" :error="formError.comment" :front="front.comment"
                               placeholder="Ваши пожелания"/>
           </div>
 
-          <div class="cart__options">
+          <div class="cart__options">methodsa
             <h3 class="cart__title">Доставка</h3>
             <ul class="cart__options options">
               <li class="options__item">
@@ -105,7 +105,7 @@
           </ul>
 
           <div class="cart__total">
-            <p>Доставка: <b>{{productDeliveryPrice|numberFormat}} ₽</b></p>
+            <p>Доставка: <b>{{ productDeliveryPrice|numberFormat }} ₽</b></p>
             <p>Итого: <b>{{ $store.getters.cartTotalItems }}</b> {{ howManyItems }} на сумму
               <b>{{ totalPriceDelivery|numberFormat }} ₽</b></p>
           </div>
@@ -142,7 +142,14 @@ export default {
       formData: {},
       formError: {},
       formErrorMessage: '',
-      sendingBasket: false
+      sendingBasket: false,
+      errors:[],
+      front:{
+        name:'',
+        address:'',
+        phone:'',
+        email:''
+      }
     }
   },
   components: {BaseFormText, BaseFormTextArea},
@@ -156,7 +163,7 @@ export default {
     totalPriceDelivery() {
       return this.totalPrice + this.deliveryPrice
     },
-    productDeliveryPrice(){
+    productDeliveryPrice() {
       return this.deliveryPrice
     }
 
@@ -165,10 +172,51 @@ export default {
     numberFormat
   },
   methods: {
+    validEmail: function (email) {
+      let pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return pattern.test(email);
+    },
+    validPhone: function (phone){
+      let pattern =/^\+\d{11}$/;
+      return pattern.test(phone);
+    },
+    validateForm() {
+      this.errors=[]
+      this.front.name=''
+      this.front.address=''
+      this.front.phone=''
+      this.front.email=''
+      if (!this.formData.name) {
+        this.errors.push('Имя')
+        this.front.name = 'Введите свое имя пожалуйста'
+      }
+      if (!this.formData.address) {
+        this.errors.push('Адрес')
+        this.front.address = 'Введите адрес доставки плиз'
+      }
+      if (!this.formData.phone) {
+        this.errors.push('Телефон')
+        this.front.phone = 'Вы забыли указать свой номер телефона'
+      } else if (!this.validPhone(this.formData.phone)){
+        this.errors.push('Телефон')
+        this.front.phone = 'Укажите корректный номер телефона'
+      }
+      if (!this.formData.email) {
+        this.errors.push('Емейл')
+        this.front.email = 'Заполните поле Email пожалуйста'
+      } else if (!this.validEmail(this.formData.email)) {
+        this.errors.push('Емейл')
+        this.front.email = 'Укажите корректный адрес электронной почты'
+      }
+      if (!this.errors.length) {
+        this.order();
+      }
+    },
     order() {
       this.formError = {};
       this.formErrorMessage = '';
       this.sendingBasket = true;
+
       axios
         .post(API_BASE_URL + '/api/orders', {
           ...this.formData
@@ -181,7 +229,7 @@ export default {
           this.$store.commit('resetCart');
           this.sendingBasket = false;
           this.$store.commit('updateOrderInfo', response.data);
-          this.$router.push({name: 'orderInfo',params:{id:response.data.id}});
+          this.$router.push({name: 'orderInfo', params: {id: response.data.id}});
         })
         .catch(error => {
           this.formError = error.response.data.error.request || {};
